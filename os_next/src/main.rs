@@ -1,19 +1,23 @@
 #![no_std]
 #![no_main]
 
+use log::info;
+
 mod lang_item;
 mod sbi;
+
+#[macro_use]
+mod console;
+mod logging;
 
 core::arch::global_asm!(include_str!("entry.asm"));
 
 #[no_mangle]
 pub extern "C" fn rust_main() -> ! {
     clear_bss();
-    // sbi::legacy_ext::sbi_set_timer(0x1);
-    print_num(sbi::base_ext::sbi_get_impl_id());
-    sbi::legacy_ext::sbi_console_putchar(b'\n' as usize);
+    logging::init();
+    info!("Hello, world!");
     sbi::legacy_ext::sbi_shutdown();
-    loop {}
 }
 
 fn clear_bss() {
